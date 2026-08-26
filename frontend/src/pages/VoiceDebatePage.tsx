@@ -23,19 +23,19 @@ interface VoiceMessage {
 }
 
 // ─── Web Speech API helpers ───────────────────────────────────
+// Extend Window so TypeScript knows about webkit-prefixed SpeechRecognition
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition
-    webkitSpeechRecognition: typeof SpeechRecognition
+    SpeechRecognition: new () => SpeechRecognition
+    webkitSpeechRecognition: new () => SpeechRecognition
   }
 }
 
-function getSpeechRecognition() {
+function getSpeechRecognition(): SpeechRecognition | null {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition
   if (!SR) return null
   return new SR()
 }
-
 // ─── Waveform visualiser ──────────────────────────────────────
 function Waveform({ active, color = '#2563EB' }: { active: boolean; color?: string }) {
   const bars = 20
@@ -230,11 +230,11 @@ function VoiceSummaryScreen({ summary, topic, onNewDebate, onDashboard }: {
         )}
 
         {/* New achievements */}
-        {summary.newAchievements?.length > 0 && (
+        {(summary.newAchievements ?? []).length > 0 && (
           <div className="mb-4">
             <h4 className="text-warning text-xs font-semibold mb-2">🎉 New Achievements</h4>
             <div className="flex flex-wrap gap-2">
-              {summary.newAchievements.map((a: any) => (
+              {(summary.newAchievements ?? []).map((a: any) => (
                 <div key={a.id} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/30 text-xs text-warning">
                   <span>{a.icon}</span> {a.name}
                 </div>
@@ -267,7 +267,9 @@ export default function VoiceDebatePage() {
   // Setup
   const [setupMode, setSetupMode]         = useState(true)
   const [topic, setTopic]                 = useState(searchParams.get('topic') || '')
-  const [difficulty, setDifficulty]       = useState(user?.difficultyLevel || 'intermediate')
+  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced' | 'expert'>(
+    (user?.difficultyLevel as 'beginner' | 'intermediate' | 'advanced' | 'expert') || 'intermediate'
+  )
   const [aiPersonality, setAiPersonality] = useState('logical')
   const [voiceEnabled, setVoiceEnabled]   = useState(true)
   const [autoListen, setAutoListen]       = useState(true)
@@ -582,7 +584,7 @@ export default function VoiceDebatePage() {
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-3">Difficulty</label>
               <div className="grid grid-cols-4 gap-2">
-                {['beginner', 'intermediate', 'advanced', 'expert'].map(d => (
+                {(['beginner', 'intermediate', 'advanced', 'expert'] as const).map(d => (
                   <button key={d} onClick={() => setDifficulty(d)}
                     className={`py-2 rounded-xl text-xs font-semibold capitalize border transition-all ${difficulty === d ? 'border-primary-500/50 bg-primary-600/20 text-white' : 'border-white/10 text-slate-400 hover:text-white'}`}>
                     {d}
