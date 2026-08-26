@@ -23,18 +23,13 @@ interface VoiceMessage {
 }
 
 // ─── Web Speech API helpers ───────────────────────────────────
-// Extend Window so TypeScript knows about webkit-prefixed SpeechRecognition
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognition
-    webkitSpeechRecognition: new () => SpeechRecognition
-  }
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SpeechRecognitionAPI: any =
+  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
 
-function getSpeechRecognition(): SpeechRecognition | null {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition
-  if (!SR) return null
-  return new SR()
+function getSpeechRecognition(): any | null {
+  if (!SpeechRecognitionAPI) return null
+  return new SpeechRecognitionAPI()
 }
 // ─── Waveform visualiser ──────────────────────────────────────
 function Waveform({ active, color = '#2563EB' }: { active: boolean; color?: string }) {
@@ -297,7 +292,7 @@ export default function VoiceDebatePage() {
   const [speechSupported, setSpeechSupported] = useState(true)
 
   // Refs
-  const recognitionRef  = useRef<SpeechRecognition | null>(null)
+  const recognitionRef  = useRef<any>(null)
   const synthRef        = useRef<SpeechSynthesis>(window.speechSynthesis)
   const messagesEndRef  = useRef<HTMLDivElement>(null)
   const autoListenTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -311,7 +306,7 @@ export default function VoiceDebatePage() {
 
   // Check browser speech support
   useEffect(() => {
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+    if (!(window as any).SpeechRecognition && !(window as any).webkitSpeechRecognition) {
       setSpeechSupported(false)
     }
   }, [])
@@ -368,7 +363,7 @@ export default function VoiceDebatePage() {
 
     rec.onstart = () => { setIsListening(true); setInterimText('') }
 
-    rec.onresult = (e: SpeechRecognitionEvent) => {
+    rec.onresult = (e: any) => {
       let interim = '', final = ''
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0].transcript
@@ -387,7 +382,7 @@ export default function VoiceDebatePage() {
       if (text) handleSendVoice(text)
     }
 
-    rec.onerror = (e: SpeechRecognitionErrorEvent) => {
+    rec.onerror = (e: any) => {
       setIsListening(false)
       if (e.error !== 'no-speech' && e.error !== 'aborted') {
         toast.error(`Microphone error: ${e.error}`)
