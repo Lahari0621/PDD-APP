@@ -98,11 +98,15 @@ jobs:
           echo "  STATUS: ALL CHECKS PASSED"
           echo "==============================="
 
+      - name: Generate Excel security report
+        if: always()
+        run: |
+          pip install openpyxl -q
+          python scripts/generate_security_report.py
+
       - name: Upload security report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: security-report
-          path: |
-            backend/package.json
-            frontend/package.json
+          path: test-output/

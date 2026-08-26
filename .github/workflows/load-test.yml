@@ -68,6 +68,12 @@ jobs:
           echo "All 20 tests PASSED"       >> test-output/load-report.txt
           echo "Success rate: 100%"        >> test-output/load-report.txt
 
+      - name: Generate Excel load test report
+        if: always()
+        run: |
+          pip install openpyxl -q
+          python scripts/generate_load_report.py
+
       - name: Upload load test report
         if: always()
         uses: actions/upload-artifact@v4

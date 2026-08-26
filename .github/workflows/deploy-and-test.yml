@@ -50,6 +50,19 @@ jobs:
           test -f frontend/dist/index.html
           echo "✅ All smoke tests passed"
 
+      - name: Generate Excel deploy report
+        if: always()
+        run: |
+          pip install openpyxl -q
+          python scripts/generate_deploy_report.py
+
+      - name: Upload deploy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-test-report
+          path: test-output/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
