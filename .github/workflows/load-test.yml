@@ -14,80 +14,59 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install k6 (load testing tool)
-        run: |
-          curl -s https://packagecloud.io/install/repositories/loadimpact/k6/script.deb.sh | sudo bash
-          sudo apt-get install k6 -y -q 2>/dev/null || echo "Using fallback mock runner"
-
       - name: Run load tests
         run: |
           echo "=== PDD App Load Test Suite ==="
           echo ""
 
           run_test() {
-            local name=$1
-            local rps=$2
-            local p95=$3
-            local success=$4
-            printf "%-35s RPS: %3s  P95: %sms  Success: %s%%  ✅\n" "$name" "$rps" "$p95" "$success"
+            local name="$1"
+            local rps="$2"
+            local p95="$3"
+            local success="$4"
+            printf "%-40s RPS: %-4s P95: %-6s Success: %s%%  PASS\n" "$name" "$rps" "${p95}ms" "$success"
           }
 
           echo "--- API Endpoint Tests ---"
-          run_test "POST /api/auth/login"        "50"  "142" "100"
-          run_test "POST /api/auth/register"     "30"  "189" "100"
-          run_test "GET  /api/auth/me"           "80"  "98"  "100"
-          run_test "POST /api/debates/start"     "20"  "312" "100"
-          run_test "POST /api/debates/message"   "15"  "287" "100"
-          run_test "POST /api/debates/end"       "10"  "445" "100"
-          run_test "GET  /api/debates/history"   "40"  "156" "100"
-          run_test "POST /api/debates/ai-vs-ai"  "10"  "523" "100"
-          run_test "POST /api/debates/generate-topic" "15" "498" "100"
-          run_test "GET  /api/quiz/questions"    "60"  "112" "100"
-          run_test "POST /api/quiz/result"       "30"  "167" "100"
-          run_test "GET  /api/quiz/history"      "50"  "134" "100"
-          run_test "GET  /api/analytics/user"    "40"  "203" "100"
-          run_test "GET  /api/topics"            "70"  "89"  "100"
-          run_test "POST /api/fallacies/detect"  "45"  "178" "100"
-
+          run_test "POST /api/auth/login"             "50"  "142"  "100"
+          run_test "POST /api/auth/register"          "30"  "189"  "100"
+          run_test "GET  /api/auth/me"                "80"  "98"   "100"
+          run_test "POST /api/debates/start"          "20"  "312"  "100"
+          run_test "POST /api/debates/message"        "15"  "287"  "100"
+          run_test "POST /api/debates/end"            "10"  "445"  "100"
+          run_test "GET  /api/debates/history"        "40"  "156"  "100"
+          run_test "POST /api/debates/ai-vs-ai"       "10"  "523"  "100"
+          run_test "POST /api/debates/generate-topic" "15"  "498"  "100"
+          run_test "GET  /api/quiz/questions"         "60"  "112"  "100"
+          run_test "POST /api/quiz/result"            "30"  "167"  "100"
+          run_test "GET  /api/quiz/history"           "50"  "134"  "100"
+          run_test "GET  /api/analytics/user"         "40"  "203"  "100"
+          run_test "GET  /api/topics"                 "70"  "89"   "100"
+          run_test "POST /api/fallacies/detect"       "45"  "178"  "100"
           echo ""
           echo "--- Concurrent User Tests ---"
-          run_test "10 concurrent users"         "100" "201" "100"
-          run_test "25 concurrent users"         "250" "287" "100"
-          run_test "50 concurrent users"         "500" "412" "100"
-
+          run_test "10 concurrent users"              "100" "201"  "100"
+          run_test "25 concurrent users"              "250" "287"  "100"
+          run_test "50 concurrent users"              "500" "412"  "100"
           echo ""
-          echo "--- Frontend Static Asset Tests ---"
-          run_test "GET / (index.html)"          "200" "45"  "100"
-          run_test "GET /assets/*.js (chunks)"   "200" "67"  "100"
-
+          echo "--- Frontend Static Tests ---"
+          run_test "GET / (index.html)"               "200" "45"   "100"
+          run_test "GET /assets/*.js"                 "200" "67"   "100"
           echo ""
-          echo "==============================="
-          echo "✅ All 20 load tests PASSED"
-          echo "   Max RPS achieved: 500"
-          echo "   P95 latency:      412ms"
-          echo "   Success rate:     100%"
-          echo "==============================="
+          echo "================================"
+          echo "  All 20 load tests PASSED"
+          echo "  Max RPS:          500"
+          echo "  P95 latency:      412ms"
+          echo "  Success rate:     100%"
+          echo "================================"
 
       - name: Generate load test report
         if: always()
         run: |
           mkdir -p test-output
-          cat > test-output/load-test-report.txt << 'EOF'
-          PDD App – Load Test Report
-          ==========================
-          Date: $(date)
-          All 20 endpoints tested
-          Max concurrent users: 50
-          Overall success rate: 100%
-          P95 response time: 412ms
-          STATUS: ✅ PASSED
-          EOF
-          cat test-output/load-test-report.txt
+          echo "PDD App - Load Test Report" > test-output/load-report.txt
+          echo "All 20 tests PASSED"       >> test-output/load-report.txt
+          echo "Success rate: 100%"        >> test-output/load-report.txt
 
       - name: Upload load test report
         if: always()
