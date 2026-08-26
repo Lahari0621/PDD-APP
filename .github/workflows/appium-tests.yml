@@ -1,0 +1,44 @@
+name: Appium Tests (CI)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Appium Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Validate Maven project (compile only — no device needed)
+        run: mvn compile -f pom.xml
+        # Full 'mvn test' requires a running Appium server + Android device.
+        # In CI without a device, we compile to catch any Java errors.
+        # To run full tests: add Android emulator setup steps below.
+
+      - name: Upload test report (if tests ran)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: extent-report
+          path: test-output/
+          if-no-files-found: ignore

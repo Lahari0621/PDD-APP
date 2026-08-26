@@ -1,7 +1,41 @@
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build outputs ─────────────────────────────────────────────
+frontend/dist/
+frontend/build/
+backend/dist/
+
+# ── Environment files (NEVER commit secrets) ──────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# ── Maven / Java ──────────────────────────────────────────────
 target/
 test-output/
 *.class
 *.jar
+
+# ── Android ───────────────────────────────────────────────────
+android-app/.gradle/
+android-app/.idea/
+android-app/build/
+android-app/local.properties
+*.apk
+*.aab
+
+# ── IDE / OS ──────────────────────────────────────────────────
 .idea/
+.vscode/
 *.iml
 .DS_Store
+Thumbs.db
+
+# ── Logs ──────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
