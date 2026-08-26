@@ -173,17 +173,17 @@ def create_workbook():
         ("RESULT",                   "✅ ALL PASSED"),
     ]
     for r, (k, v) in enumerate(rows, 3):
+        row_bg = "E8EFF9" if r % 2 == 0 else "FFFFFF"
         c = ws4.cell(row=r, column=1, value=k)
-        c.fill = fill("E8EFF9" if r % 2 == 0 else "FFFFFF")
+        c.fill = fill(row_bg)
         c.font = Font(bold=True, size=10, name="Calibri"); c.alignment = left(); c.border = border()
         c2 = ws4.cell(row=r, column=2, value=v)
         if k == "RESULT":
             c2.fill = fill("D6F4E4"); c2.font = Font(bold=True, color="1A7A45", size=11, name="Calibri")
         else:
-            c2.fill = fill("E8EFF9" if r % 2 == 0 else "FFFFFF")
+            c2.fill = fill(row_bg)
             c2.font = Font(size=10, name="Calibri")
         c2.alignment = center(); c2.border = border()
-        c.fill = c.fill  # keep bg consistent
 
     ws4.column_dimensions["A"].width = 32
     ws4.column_dimensions["B"].width = 20
