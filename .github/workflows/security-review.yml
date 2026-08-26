@@ -98,11 +98,13 @@ jobs:
           echo "  STATUS: ALL CHECKS PASSED"
           echo "==============================="
 
+      - name: Install openpyxl
+        if: always()
+        run: python3 -m pip install --quiet openpyxl
+
       - name: Generate Excel security report
         if: always()
-        run: |
-          pip install openpyxl -q
-          python scripts/generate_security_report.py
+        run: python3 scripts/generate_security_report.py
 
       - name: Upload security report
         if: always()

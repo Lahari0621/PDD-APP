@@ -50,11 +50,13 @@ jobs:
           test -f frontend/dist/index.html
           echo "✅ All smoke tests passed"
 
+      - name: Install openpyxl
+        if: always()
+        run: python3 -m pip install --quiet openpyxl
+
       - name: Generate Excel deploy report
         if: always()
-        run: |
-          pip install openpyxl -q
-          python scripts/generate_deploy_report.py
+        run: python3 scripts/generate_deploy_report.py
 
       - name: Upload deploy report
         if: always()

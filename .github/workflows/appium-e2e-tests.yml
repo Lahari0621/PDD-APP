@@ -91,11 +91,13 @@ jobs:
           EOF
           cat test-output/summary.txt
 
+      - name: Install openpyxl
+        if: always()
+        run: python3 -m pip install --quiet openpyxl
+
       - name: Generate Excel test report
         if: always()
-        run: |
-          pip install openpyxl -q
-          python scripts/generate_appium_report.py
+        run: python3 scripts/generate_appium_report.py
 
       - name: Upload Excel report
         if: always()

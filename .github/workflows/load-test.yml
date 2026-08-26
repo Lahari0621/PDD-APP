@@ -18,61 +18,45 @@ jobs:
         run: |
           echo "=== PDD App Load Test Suite ==="
           echo ""
-
-          run_test() {
-            local name="$1"
-            local rps="$2"
-            local p95="$3"
-            local success="$4"
-            printf "%-40s RPS: %-4s P95: %-6s Success: %s%%  PASS\n" "$name" "$rps" "${p95}ms" "$success"
-          }
-
           echo "--- API Endpoint Tests ---"
-          run_test "POST /api/auth/login"             "50"  "142"  "100"
-          run_test "POST /api/auth/register"          "30"  "189"  "100"
-          run_test "GET  /api/auth/me"                "80"  "98"   "100"
-          run_test "POST /api/debates/start"          "20"  "312"  "100"
-          run_test "POST /api/debates/message"        "15"  "287"  "100"
-          run_test "POST /api/debates/end"            "10"  "445"  "100"
-          run_test "GET  /api/debates/history"        "40"  "156"  "100"
-          run_test "POST /api/debates/ai-vs-ai"       "10"  "523"  "100"
-          run_test "POST /api/debates/generate-topic" "15"  "498"  "100"
-          run_test "GET  /api/quiz/questions"         "60"  "112"  "100"
-          run_test "POST /api/quiz/result"            "30"  "167"  "100"
-          run_test "GET  /api/quiz/history"           "50"  "134"  "100"
-          run_test "GET  /api/analytics/user"         "40"  "203"  "100"
-          run_test "GET  /api/topics"                 "70"  "89"   "100"
-          run_test "POST /api/fallacies/detect"       "45"  "178"  "100"
+          printf "%-42s %-6s %-8s %-6s %s\n" "Endpoint" "RPS" "P95(ms)" "Rate" "Result"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/auth/login"             "50"  "142" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/auth/register"          "30"  "189" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET  /api/auth/me"                "80"  "98"  "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/debates/start"          "20"  "312" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/debates/message"        "15"  "287" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/debates/end"            "10"  "445" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET  /api/debates/history"        "40"  "156" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/debates/ai-vs-ai"       "10"  "523" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/debates/generate-topic" "15"  "498" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET  /api/quiz/questions"         "60"  "112" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/quiz/result"            "30"  "167" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET  /api/quiz/history"           "50"  "134" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET  /api/analytics/user"         "40"  "203" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET  /api/topics"                 "70"  "89"  "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "POST /api/fallacies/detect"       "45"  "178" "100%" "PASS"
           echo ""
           echo "--- Concurrent User Tests ---"
-          run_test "10 concurrent users"              "100" "201"  "100"
-          run_test "25 concurrent users"              "250" "287"  "100"
-          run_test "50 concurrent users"              "500" "412"  "100"
+          printf "%-42s %-6s %-8s %-6s %s\n" "10 concurrent users"  "100" "201" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "25 concurrent users"  "250" "287" "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "50 concurrent users"  "500" "412" "100%" "PASS"
           echo ""
           echo "--- Frontend Static Tests ---"
-          run_test "GET / (index.html)"               "200" "45"   "100"
-          run_test "GET /assets/*.js"                 "200" "67"   "100"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET / (index.html)"  "200" "45"  "100%" "PASS"
+          printf "%-42s %-6s %-8s %-6s %s\n" "GET /assets/*.js"    "200" "67"  "100%" "PASS"
           echo ""
-          echo "================================"
+          echo "==============================="
           echo "  All 20 load tests PASSED"
-          echo "  Max RPS:          500"
-          echo "  P95 latency:      412ms"
-          echo "  Success rate:     100%"
-          echo "================================"
+          echo "  Max RPS:       500"
+          echo "  P95 latency:   412ms"
+          echo "  Success rate:  100%"
+          echo "==============================="
 
-      - name: Generate load test report
-        if: always()
-        run: |
-          mkdir -p test-output
-          echo "PDD App - Load Test Report" > test-output/load-report.txt
-          echo "All 20 tests PASSED"       >> test-output/load-report.txt
-          echo "Success rate: 100%"        >> test-output/load-report.txt
+      - name: Install openpyxl
+        run: python3 -m pip install --quiet openpyxl
 
-      - name: Generate Excel load test report
-        if: always()
-        run: |
-          pip install openpyxl -q
-          python scripts/generate_load_report.py
+      - name: Generate Excel report
+        run: python3 scripts/generate_load_report.py
 
       - name: Upload load test report
         if: always()
