@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="PDD App – Full Appium Suite" parallel="none" verbose="2">
+
+  <listeners>
+    <listener class-name="com.pddapp.listeners.ExtentReportListener"/>
+  </listeners>
+
+  <test name="Authentication Tests">
+    <classes>
+      <class name="com.pddapp.tests.AuthTest"/>
+    </classes>
+  </test>
+
+  <test name="Debate Tests">
+    <classes>
+      <class name="com.pddapp.tests.DebateTest"/>
+    </classes>
+  </test>
+
+  <test name="Voice Debate Tests">
+    <classes>
+      <class name="com.pddapp.tests.VoiceDebateTest"/>
+    </classes>
+  </test>
+
+  <test name="Quiz Tests">
+    <classes>
+      <class name="com.pddapp.tests.QuizTest"/>
+    </classes>
+  </test>
+
+  <test name="Analytics Tests">
+    <classes>
+      <class name="com.pddapp.tests.AnalyticsTest"/>
+    </classes>
+  </test>
+
+  <test name="AI vs AI Debate Tests">
+    <classes>
+      <class name="com.pddapp.tests.AiVsAiTest"/>
+    </classes>
+  </test>
+
+  <test name="Topic Generator Tests">
+    <classes>
+      <class name="com.pddapp.tests.TopicGeneratorTest"/>
+    </classes>
+  </test>
+
+  <test name="Profile Tests">
+    <classes>
+      <class name="com.pddapp.tests.ProfileTest"/>
+    </classes>
+  </test>
+
+  <test name="Fallacy Detection Tests">
+    <classes>
+      <class name="com.pddapp.tests.FallacyDetectionTest"/>
+    </classes>
+  </test>
+
+  <test name="Navigation Tests">
+    <classes>
+      <class name="com.pddapp.tests.NavigationTest"/>
+    </classes>
+  </test>
+
+</suite>
